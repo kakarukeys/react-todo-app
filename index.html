@@ -79,7 +79,7 @@
             var TextInput = React.createClass({
                 propTypes: {
                     // function(text) {...}
-                    onKeyDown: P.func
+                    onEnter: P.func
                 },
 
                 getInitialState: function() {
@@ -92,8 +92,12 @@
 
                 onEnter: function(e) {
                     if (e.keyCode === 13) {
-                        this.props.onEnter(e.target.value);
-                        this.setState({text: ''});
+                        var inputText = e.target.value.trim();
+
+                        if (inputText) {
+                            this.props.onEnter(inputText);
+                            this.setState({text: ''});
+                        }
                     }
                 },
 
@@ -102,7 +106,6 @@
                         type: "text",
                         value: this.state.text,
                         onChange: this.handleChange,
-
                         onKeyDown: this.onEnter
                     });
                 }
@@ -111,7 +114,7 @@
             var TodoItem = React.createClass({
                 propTypes: {
                     todo: Todo.isRequired,
-                    onRemove: P.func
+                    onRemove: P.func.isRequired
                 },
 
                 render: function() {
@@ -131,9 +134,7 @@
                     return R("ul", null, _.map(this.props.todos, function(todo, id) {
                         return R("li", {key: id}, R(TodoItem, {
                             todo: todo,
-
-                            // trigger an action
-                            onRemove: function() {dispatcher.trigger("removeTodo", {id: id});}
+                            onRemove: function() {dispatcher.trigger("removeTodo", {id: id});}  // trigger an action
                         }));
                     }));
                 }
@@ -152,10 +153,12 @@
                     dispatcher.on("all", function(eventName, eventArgs) {
                         var result = actions[eventName](that.state, eventArgs);
 
-                        // call setState regardless of whether result is a promise or value
-                        Promise.resolve(result).then(function(v) {
-                            that.setState(v);
-                        });
+                        if (result) {
+                            // call setState regardless of whether result is a promise or value
+                            Promise.resolve(result).then(function(v) {
+                                that.setState(v);
+                            });
+                        }
                     });
 
                     dispatcher.trigger("listTodos");
@@ -166,15 +169,12 @@
 
                     return R("div", null,
                         R(TextInput, {
-                            onEnter: function(text) {
-                                // trigger an action
-                                dispatcher.trigger("addTodo", {description: text});
-                            }
+                            onEnter: function(text) {dispatcher.trigger("addTodo", {description: text});}   // trigger an action
                         }),
 
-                        _.size(todos) ?
-                            R(TodoList, {todos: todos}) :
-                            R("p", null, "hurray no task!")
+                        _.isEmpty(todos) ?
+                            R("p", null, "hurray no task!") :
+                            R(TodoList, {todos: todos})
                     );
                 }
             });
