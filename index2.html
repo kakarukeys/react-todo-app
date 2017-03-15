@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Todo App</title>
+
+        <style type="text/css">
+            button.remove {
+                margin-left: 0.5em;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app"></div>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.min.js"></script>
+        <script>
+            // exercise: add an event handler to x button, to create an alert on click
+            var R = React.createElement;
+
+
+            var TodoItem = React.createClass({
+                render: function() {
+                    return R("div", null, 
+                        R("span", null, this.props.description),
+                        R("button", null, 'x')
+                    );
+                }
+            });
+
+            var TodoApp = React.createClass({
+                getInitialState: function() {
+                    return {todos: [
+                        {"description": "wash clothes"},
+                        {"description": "buy milk"}
+                    ]};
+                },
+
+                render: function() {
+                    var todos = this.state.todos;
+
+                    return R("ul", null, todos.map(function(obj) {
+                        return R("li", null, R(TodoItem, obj));
+                    }));
+                }
+            });
+
+            ReactDOM.render(R(TodoApp), document.getElementById("app"));
+        </script>
+    </body>
+</html>

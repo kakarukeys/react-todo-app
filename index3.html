@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Todo App</title>
+
+        <style type="text/css">
+            button.remove {
+                margin-left: 0.5em;
+            }
+
+            .completed {
+                color: gray;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app"></div>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.min.js"></script>
+        <script>
+            // exercise: to handle the completion of todo without mutating the data.
+            var R = React.createElement;
+
+            // TodoApp (pass infomation into children using children's props)
+            //     - TodoItem (pass infomation into parent using children's props (must be function))
+            //     - TodoItem
+
+            // React is supposed to be with immutable data structure (functional programming style)
+            // Most people use React using native Javascript data structure
+            // try not to mutate the data
+
+
+
+            var TodoItem = React.createClass({
+                render: function() {
+                    return R("div", {className: this.props.todo.completed ? "completed" : ''}, 
+                        R("span", null, this.props.todo.description),
+                        R("button", {onClick: () => this.props.onRemove(this.props.todo.id)}, 'x')
+                    );
+                }
+            });
+
+            var TodoApp = React.createClass({
+                getInitialState: function() {
+                    return {todos: [
+                        {"id": 1, "description": "wash clothes", "completed": false},
+                        {"id": 2, "description": "buy milk", "completed": false},
+                        {"id": 3, "description": "learn react", "completed": false},
+                    ]};
+                },
+
+                onRemove: function(id) {
+                    var todos = this.state.todos,
+                        todoToRemove = todos.find(obj => obj.id === id);
+                    todoToRemove.completed = true;      // cheating, mutated data
+                    this.setState({todos: todos})
+                },
+
+                render: function() {
+                    var todos = this.state.todos,
+                        that = this;
+
+                    return R("ul", null, todos.map(function(obj) {
+                        return R("li", null, R(TodoItem, {
+                            todo: obj, onRemove: that.onRemove
+                        }));
+                    }));
+                }
+            });
+
+            ReactDOM.render(R(TodoApp), document.getElementById("app"));
+        </script>
+    </body>
+</html>
