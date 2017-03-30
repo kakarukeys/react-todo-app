@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Todo App</title>
+
+        <style type="text/css">
+            button.remove {
+                margin-left: 0.5em;
+            }
+
+            .completed {
+                color: gray;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app"></div>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.min.js"></script>
+        <script>
+            // next: how to blank the text field using React???
+            // exercise: practice javascript native functions
+            //     1. simplify onToggleComplete using Object.assign
+            //     2. [
+            //              {id: "1", foo: [3, 4], bar: 100},
+            //              {id: "2", xxx: 123},
+            //              {id: "1", foo: [4, 5], xxx: 67}
+            //        ]
+            //        write a function to merge the objects inside array, to become
+            //          [
+            //              {id: "1", foo: [3, 4, 5], bar: [100], xxx: [67]},
+            //              {id: "2", xxx: [123]}
+            //          ]
+
+            // if you don't need the historyObject.assign of the state, it's ok to mutate the state.
+            // looked at react - flux/redux architecture
+
+            var R = React.createElement;
+
+            var TodoItem = React.createClass({
+                render: function() {
+                    return R("div", {className: this.props.todo.completed ? "completed" : ''}, 
+                        R("span", null, this.props.todo.description),
+                        R("button", {onClick: () => this.props.onRemove(this.props.todo.id)}, 'x')
+                    );
+                }
+            });
+
+            var TodoApp = React.createClass({
+                getInitialState: function() {
+                    return {todos: [
+                        {"id": 1, "description": "wash clothes", "completed": false},
+                        {"id": 2, "description": "buy milk", "completed": false},
+                        {"id": 3, "description": "learn react", "completed": false},
+                    ]};
+                },
+
+                onTextInput: function(e) {
+                    if (e.keyCode === 13) {
+                        var newTodoText = e.target.value,
+                            todos = this.state.todos,
+                            newTodos;
+
+                        newTodos = todos.concat([{
+                            "id": todos.length + 1, 
+                            "description": newTodoText, 
+                            "completed": false,
+                        }]);
+
+                        e.target.value = '';        // DOM manipulation
+                        this.setState({"todos": newTodos});
+                    }
+                },
+
+                onToggleComplete: function(id) {
+                    var todos = this.state.todos,
+
+                        newTodos = todos.map(obj => {
+                            if (id == obj.id) {
+                                return {
+                                    "id": obj.id,
+                                    "description": obj.description, 
+                                    "completed": !obj.completed
+                                };
+                            } else {
+                                return obj;
+                            }
+                        });
+
+                    this.setState({"todos": newTodos});
+                },
+
+                render: function() {
+                    var todos = this.state.todos,
+                        that = this;
+
+                    return R("div", null, 
+                        R("input", {onKeyDown: that.onTextInput}),
+                        R("ul", null, todos.map(function(obj) {
+                            return R("li", null, R(TodoItem, {
+                                todo: obj, onRemove: that.onToggleComplete
+                            }));
+                        }))
+                    )
+
+                }
+            });
+
+            ReactDOM.render(R(TodoApp), document.getElementById("app"));
+        </script>
+    </body>
+</html>
