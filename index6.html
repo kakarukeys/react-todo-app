@@ -23,21 +23,22 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.min.js"></script>
         <script>
             // next: how to blank the text field using React???
-            // exercise: practice javascript native functions
-            //     1. simplify onToggleComplete using Object.assign
-            //     2. [
-            //              {id: "1", foo: [3, 4], bar: 100},
-            //              {id: "2", xxx: 123},
-            //              {id: "1", foo: [4, 5], xxx: 67}
-            //        ]
-            //        write a function to merge the objects inside array, to become
-            //          [
-            //              {id: "1", foo: [3, 4, 5], bar: [100], xxx: [67]},
-            //              {id: "2", xxx: [123]}
-            //          ]
-
-            // if you don't need the history of the state, it's ok to mutate the state.
-            // looked at react - flux/redux architecture
+            //
+            // exercise: find the javascript native method xxxx so that
+            //         arr = [{name: "Yudi", age: 28, interest: "programming"},
+            //               {name: "Mark", age: 35, interest: "programming"},
+            //               {name: "Jeff", age: 18, interest: "teaching"}]
+            //
+            //         arr.xxxx({age: 18}) = [{name: "Jeff", age: 18, interest: "teaching"}]
+            //
+            //         arr.xxxx({interest: "programming"}) = [
+            //               {name: "Yudi", age: 28, interest: "programming"},
+            //               {name: "Mark", age: 35, interest: "programming"},
+            //         ]
+            //
+            //         arr.xxxx({name: "Mark", age: 35}) = [{name: "Mark", age: 35, interest: "programming"}]
+            //
+            //   if there is no such method, please implement it yourself.
 
             var R = React.createElement;
 
@@ -81,11 +82,7 @@
 
                         newTodos = todos.map(obj => {
                             if (id == obj.id) {
-                                return {
-                                    "id": obj.id,
-                                    "description": obj.description, 
-                                    "completed": !obj.completed
-                                };
+                                return Object.assign(obj, {"completed": !obj.completed});
                             } else {
                                 return obj;
                             }
